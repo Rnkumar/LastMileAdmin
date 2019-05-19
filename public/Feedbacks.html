@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <style>
+        h5,
+        p {
+            color: #000000;
+        }
+        
+        th {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+                <h5 class="mt-3 mb-3 ml-2"><small class="text-white">Feedbacks</small></h5>
+            </div>
+            <div class="col-sm-8">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="card text-white mt-3 mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center text-black">Positive</h5>
+                                    <p class="text-center">{{sentimentValues.pos}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="card text-white mt-3 mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Negative</h5>
+                                    <p class="text-center">{{sentimentValues.neg}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="card text-white mt-3 mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">Neutral</h5>
+                                    <p class="text-center">{{sentimentValues.neu}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <button class="btn btn-primary font-weight-bold shadow float-right mt-2 mr-4" type="button" ng-click="redirectToAnalytics()">Analytics</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead">
+                        <tr>
+                            <th class="col-1 text-center">#</th>
+                            <th class="col-1">Name</th>
+                            <th class="col-1">DriverName</th>
+                            <th class="col-2 text-center">Location</th>
+                            <th class="col-1 text-center">Date</th>
+                            <th class="col-6">Feedback</th>
+                        </tr>
+                        <tr ng-repeat="data in feedbackData">
+                            <td class="col-1 text-white text-center">{{ $index+1 }}</td>
+                            <td class="col-2 text-white">{{ data.Name }}</td>
+                            <td class="col-1 text-white">{{ data.drivername }}</td>
+                            <td class="col-2 text-center text-white">{{ data.location }}</td>
+                            <td class="col-1 text-center text-white">{{ data.date }}</td>
+                            <td class="col-5 text-white">{{ data.comment }}</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

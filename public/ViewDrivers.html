@@ -1,0 +1,37 @@
+<html>
+
+<head>
+    <style>
+        th {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h5 class="mt-3 mb-3 ml-2"><small class="text-white">ViewDrivers</small></h5>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead">
+                <tr>
+                    <th class="col-1 text-center">#</th>
+                    <th class="col-2">Name</th>
+                    <th class="col-3">Address</th>
+                    <th class="col-2 text-center">Vehicle-type</th>
+                    <th class="col-2 text-center">Mobile</th>
+                    <!-- <th class="col-2 text-center">Category</th> -->
+                </tr>
+                <tr ng-repeat="data in driverData">
+                    <td class="col-1 text-white text-center">{{ $index+1 }}</td>
+                    <td class="col-2 text-white">{{ data.Name }}</td>
+                    <td class="col-4 text-white">{{ data.Address }}</td>
+                    <td class="col-2 text-white text-center">{{ data.VehicleType }}</td>
+                    <td class="col-1 text-white text-center">{{ data.Mobile }}</td>
+                    <!-- <td class="col-1 text-center">{{ data.Category }}</td> -->
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+
+</html>

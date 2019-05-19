@@ -1,0 +1,19 @@
+html, body{
+    height:'100%';
+}
+
+.c{
+    min-height: '100%';
+    overflow: hidden;
+}
+
+.col1{
+    margin-bottom: -9999px;
+    padding-bottom: 9999px;
+}
+
+.col2{
+    margin-bottom: -9999px;
+    padding-bottom: 9999px;
+}
+

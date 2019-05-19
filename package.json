@@ -1,0 +1,17 @@
+{
+    "name": "tone-analyzer-request-sdk",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "express": "^4.16.4",
+        "vader-sentiment": "^1.1.3"
+    }
+}

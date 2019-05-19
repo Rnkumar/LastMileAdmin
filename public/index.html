@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <meta name="description" content="Retrieve meta information of city labels, transit stations, etc.">
+    <title>Home</title>
+
+
+    <!-- <link rel="stylesheet" href="static/css/map-js-ui.css"/> -->
+
+    <!-- <link rel="stylesheet" href="static/css/main.css"/>
+        <link rel="stylesheet" href="../static/css/bootstrap.min.css"/>
+
+        <script src="../static/js/angular.js"></script>
+        <script src="../static/js/jquery-3.3.1.min.js"></script>
+        <script src="../static/js/popper.min.js"></script>
+        <script src="../static/js/bootstrap.min.js"></script>
+        <script src="../static/js/angular-route.js"></script>
+        <script src="../static/js/angular-fire.js"></script>
+        <script src="../static/js/firebase.js"></script>
+
+        
+        <script src="../static/js/mapsjs-core.js"></script>
+        <script src="../static/js/mapsjs-service.js"></script>
+        <script src="../static/js/mapsjs-ui.js"></script>
+        <script src="../static/js/mapsjs-mapevents.js"></script> -->
+
+
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.js"></script>
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css?dp-version=1549984893" />
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-route.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
+    <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
+
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-core.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-service.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBcm7sxXzUzWFuc6OXLl3mmcOvZqq3mFHo",
+            authDomain: "language-settings-b708e.firebaseapp.com",
+            databaseURL: "https://language-settings-b708e.firebaseio.com",
+            projectId: "language-settings-b708e",
+            storageBucket: "language-settings-b708e.appspot.com",
+            messagingSenderId: "255372102876",
+            appId: "1:255372102876:web:e907ab7188f7d08f"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        function loadMap($scope) {
+
+            const app_id = "EC9XVOgMvc6wB4ycQRFH";
+            const app_code = "vJKm39sNoH382UhujmuJ_g";
+
+            var platform = new H.service.Platform({
+                app_id: app_id,
+                app_code: app_code,
+                useCIT: true,
+                useHTTPS: true
+            });
+            var defaultLayers = platform.createDefaultLayers();
+            var map = new H.Map(document.getElementById('map'), defaultLayers.normal.map, {
+                zoom: 13,
+                center: {
+                    lat: 13.043563,
+                    lng: 77.626046
+                }
+            });
+
+            var currentPosition = new H.map.Marker({
+                lat: 37.21,
+                lng: -121.21
+            });
+
+            //map.addObject(currentPosition);
+
+            return map;
+        }
+
+        function findMatrixDistance(start, coords) {
+            var prom = new Promise(function(resolve, reject) {
+                const app_id = "EC9XVOgMvc6wB4ycQRFH";
+                const app_code = "vJKm39sNoH382UhujmuJ_g";
+                const url = "https://matrix.route.api.here.com/routing/7.2/calculatematrix.json?app_id=" + app_id + "&app_code=" + app_code + "&start0=" + start + coords + "&mode=fastest;car;traffic:disabled&summaryAttributes=tt,di"
+                fetch(url, {
+                    method: "GET"
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(responseJSON) {
+                    var travelTime = responseJSON["response"].matrixEntry;
+                    resolve(travelTime);
+                }).catch(function(err) {
+                    reject(Error(err));
+                });
+            });
+            return prom;
+        }
+
+        function distBetweenTwoPoints() {
+            const url = "https://route.api.here.com/routing/7.2/calculateroute.json?app_id=" + app_id + "&app_code=" + app_code + "&waypoint0=geo!" + way1 + "&waypoint1=geo!" + way2 + "&routeattributes=wp,sm,sh,sc&mode=fastest;car;traffic:enabled";
+            console.log(url);
+            fetch(url, {
+                method: "GET"
+            }).then(function(response) {
+                return response.json();
+            }).then(function(responseJSON) {
+                var travelTime = responseJSON["response"].route[0].summary.travelTime;
+
+            }).catch(function(err) {
+                console.log(err);
+            });
+        }
+
+        function polygonToWKT(polygon) {
+            const geometry = polygon.getGeometry();
+            return geometry.toString();
+        }
+
+        function uploadGeofence(layerId, name, geometry, app_id, app_code) {
+            const zip = new JSZip();
+            zip.file("data.wkt", "NAME\tWKT\n" + name + "\t" + geometry);
+            return zip.generateAsync({
+                type: "blob"
+            }).then(content => {
+                var formData = new FormData();
+                formData.append("zipfile", content);
+                return fetch("https://gfe.api.here.com/2/layers/upload.json", {
+                    headers: {
+                        "content-type": "multipart/form-data"
+                    },
+                    params: {
+                        "app_id": app_id,
+                        "app_code": app_code,
+                        "layer_id": layerId
+                    },
+                    data: formData,
+                    method: "POST"
+                }).then(function(response) {
+                    console.log("response:" + JSON.stringify(response));
+                }).catch(function(err) {
+                    console.log("err:" + JSON.stringify(err));
+                });
+            });
+        }
+
+        function fenceRequest(layerIds, position, platform) {
+            return new Promise((resolve, reject) => {
+                platform.getGeofencingService().request(
+                    H.service.extension.geofencing.Service.EntryPoint.SEARCH_PROXIMITY, {
+                        'layer_ids': layerIds,
+                        'proximity': position.lat + "," + position.lng,
+                        'key_attributes': ['NAME']
+                    },
+                    result => {
+                        resolve(result);
+                    }, error => {
+                        reject(error);
+                    }
+                );
+            });
+        }
+
+        function getCurrentLocation() {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log(position);
+            });
+        }
+
+        function geocode(platform, text) {
+            var geocoder = platform.getGeocodingService(),
+                geocodingParameters = {
+                    searchText: text,
+                    jsonattributes: 1
+                };
+
+            geocoder.geocode(
+                geocodingParameters,
+                onSuccess,
+                onError
+            );
+        }
+
+        function onSuccess(result) {
+            var locations = result.response.view[0].result;
+            addLocationsToMap(locations);
+
+        }
+
+        function onError(error) {
+            console.log(JSON.stringify(error));
+            alert('Ooops!');
+        }
+
+
+        function addLocationsToMap(locations) {
+            var group = new H.map.Group(),
+                position,
+                i;
+
+            // Add a marker for each location found
+            for (i = 0; i < locations.length; i += 1) {
+                position = {
+                    lat: locations[i].location.displayPosition.latitude,
+                    lng: locations[i].location.displayPosition.longitude
+                };
+                marker = new H.map.Marker(position);
+                marker.label = locations[i].location.address.label;
+                group.addObject(marker);
+            }
+
+            group.addEventListener('tap', function(evt) {
+                map.setCenter(evt.target.getPosition());
+                openBubble(evt.target.getPosition(), evt.target.label);
+            }, false);
+
+            // Add the locations group to the map
+            map.addObject(group);
+            map.setCenter(group.getBounds().getCenter());
+        }
+
+        function switchMapLanguage(map, platform, language) {
+            var mapTileService = platform.getMapTileService({
+                type: 'base'
+            });
+            var langMapLayer = mapTileService.createTileLayer(
+                'maptile',
+                'normal.day',
+                256,
+                'png8', {
+                    lg: 'CHI'
+                }
+            );
+            map.setBaseLayer(langMayLayer);
+
+            var ui = H.ui.UI.createDefault(map, defaultLayers, 'zh-CN');
+            ui.removeControl('mapsettings');
+        }
+    </script>
+
+    <script>
+        function getLocation() {
+            var locationPromise = new Promise(function(resolve, reject) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function showPosition(position) {
+                        resolve(position);
+                    });
+                } else {
+                    reject(Error("Geolocation is not supported by this browser."));
+                }
+            });
+
+            return locationPromise;
+        }
+    </script>
+
+    <script>
+        var app = angular.module("App", ['ngRoute', "firebase"]);
+
+        app.run(function($rootScope) {
+            $rootScope.$on("$locationChangeStart", function(event, next, current) {
+                var u = next.indexOf("#/");
+                var data = next.substr(u + 2);
+                var elements = $('.nav-item');
+                elements.each(function(index, element) {
+                    var mapLi = $(element);
+                    var mapA = $(mapLi).children('a');
+                    $(mapLi).removeClass('bg-primary');
+                    $(mapA).removeClass('text-white');
+                    $(mapA).addClass('text-secondary');
+                });
+                switch (data) {
+                    case "Map":
+                        var mapLi = $('.nav-item')[3];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+
+                        break;
+                    case "Dashboard":
+                        var mapLi = $('.nav-item')[0];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+                        break;
+                    case "CreateItems":
+                        var mapLi = $('.nav-item')[1];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+
+                        break;
+                    case "ViewDrivers":
+                        var mapLi = $('.nav-item')[2];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+
+                        break;
+
+                    case "Feedback":
+                        var mapLi = $('.nav-item')[4];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+
+                        break;
+                    default:
+                        break;
+                }
+
+
+            });
+        });
+
+        app.controller("test", function($scope) {
+            var itemsRef = firebase.database().ref("/admin/xxx/profile");
+            itemsRef.once('value', function(data) {
+                var obj = data.val();
+                $scope.profile = obj;
+                $scope.$applyAsync();
+            });
+        });
+
+        app.config(['$locationProvider', function($locationProvider) {
+            $locationProvider.hashPrefix('');
+        }]);
+
+        app.config(['$routeProvider', function($routeProvider) {
+            $routeProvider
+                .when('/Dashboard', {
+                    templateUrl: 'Dashboard.html',
+                    controller: 'DashboardController'
+                })
+                .when('/CreateItems', {
+                    templateUrl: 'CreateItems.html',
+                    controller: 'CreateItemsController'
+                })
+                .when('/ViewDrivers', {
+                    templateUrl: 'ViewDrivers.html',
+                    controller: 'ViewDriversController'
+                })
+                .when('/Map', {
+                    templateUrl: 'Map.html',
+                    controller: 'MapController'
+                })
+                .when('/Feedback', {
+                    templateUrl: 'Feedbacks.html',
+                    controller: 'FeedbacksController'
+                })
+                .when('/FeedbackAnalytics', {
+                    templateUrl: 'FeedbackAnalytics.html',
+                    controller: 'FeedbackAnalyticsController'
+                })
+                .otherwise({
+                    redirectTo: '/Dashboard'
+                })
+        }]);
+
+        app.controller('CreateItemsController', function($scope) {
+            var itemsRef = firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019/");
+
+            $scope.checkedValues = [];
+
+            $scope.selectDriver = function() {
+                var driver = $scope.driver;
+                for (let x in $scope.checkedValues) {
+                    let selectedItem = $scope.checkedValues[x];
+
+
+                    firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("published").set(true);
+                    firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverName").set(driver.Name);
+                    firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverMobile").set(driver.Mobile);
+
+                    firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019").child(selectedItem.orderId).child("published").set(true);
+                    firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019").child(selectedItem.orderId).child("driverId").set(driver.driverId);
+                    //firebase.database().ref("/drivers/" + driver.driverId + "/currentOrder/" + selectedItem.orderId + "/").set(selectedItem);
+                }
+            };
+
+            $scope.check = function(i, data) {
+                console.log(data);
+                var checkBox = document.getElementById("checkbox" + i);
+                if (checkBox.checked) {
+                    $scope.checkedValues.push(data);
+                } else {
+                    $scope.checkedValues = $scope.checkedValues.filter(function(value, index, arr) {
+                        return value.orderId !== data.orderId;
+                    });
+                }
+                console.log($scope.checkedValues);
+            };
+
+            $scope.searchDrivers = function(data) {
+                getLocation().then(function(response) {
+                    var coords = response.coords;
+                    var start = coords.latitude + "," + coords.longitude;
+                    var ref = firebase.database().ref("/drivers/");
+                    ref.once('value')
+                        .then(function(data) {
+                            var i = 0;
+                            let coordsValue = "";
+                            let driversArr = [];
+                            var driversList = data.val();
+                            for (var driver in driversList) {
+                                if (!driversList[driver].inRide) {
+                                    var location = driversList[driver].livelocation;
+                                    var way2 = coords.latitude + "," + coords.longitude;
+                                    coordsValue = coordsValue + "&destination" + i + "=" + way2;
+                                    i = i + 1;
+                                    driversArr.push(driversList[driver]);
+                                }
+                            }
+                            findMatrixDistance(start, coordsValue).then(function(response) {
+                                let min = 999999999;
+                                let iVal = 0;
+                                for (var index = 0; index < response.length; index++) {
+                                    var x = response[index].summary;
+                                    if (x.travelTime < min) {
+                                        min = x.travelTime;
+                                        iVal = index;
+                                    }
+                                }
+                                $scope.driver = driversArr[iVal];
+                                $scope.$apply();
+                            }).catch(function(err) {
+                                console.log(err);
+                            });
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
+                }).catch(function(err) {
+                    console.log(err);
+                });
+            };
+
+            $scope.itemsData = [];
+
+            itemsRef.on('child_added', function(data) {
+                var obj = data.val();
+                $scope.itemsData.push(obj);
+                $scope.$applyAsync();
+            });
+        });
+
+        app.controller('DashboardController', function($scope) {
+
+            var ref = firebase.database().ref("/admin/xxx/statisticalinfo/");
+            ref.once('value', function(data) {
+                var obj = data.val();
+                setValues($scope, obj);
+                $scope.$applyAsync();
+            });
+
+            var liveRef = firebase.database().ref("/deliveries/live/15-05-2019/");
+
+            $scope.liveDeliveryData = [];
+
+            liveRef.once('value', function(data) {
+                var obj = data.val();
+                for (let x in obj) {
+                    $scope.liveDeliveryData.push(obj[x]);
+                }
+                $scope.$applyAsync();
+            });
+        });
+
+        function setValues($scope, obj) {
+            $scope.numberofdeliveriesdone = obj.numberofdeliveriesdone;
+            $scope.numberofdeliveriesdonetoday = obj.numberofdeliveriesdonetoday;
+            $scope.numberofdeliveriestoday = obj.numberofdeliveriestoday;
+            $scope.numberofdrivers = obj.numofdrivers;
+        }
+
+        app.controller('ViewDriversController', function($scope) {
+            var driversRef = firebase.database().ref("/drivers/");
+
+            $scope.driverData = [];
+
+            driversRef.once('value', function(data) {
+                var obj = data.val();
+                for (let val in obj) {
+                    $scope.driverData.push(obj[val]);
+                }
+                //console.log(JSON.stringify(obj));
+                // $scope.driverData.push(obj);
+                $scope.$applyAsync();
+            });
+        });
+
+        app.controller('MapController', function($scope) {
+            let map = loadMap($scope);
+            var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+            var ref = firebase.database().ref("/drivers/");
+            var group = new H.map.Group();
+            $scope.map = map;
+            var markers = [];
+            ref.on('value', function(data) {
+                var datas = Object.values(data.val());
+                for (const driverData of datas) {
+                    var id = driverData["driverId"];
+                    var location = driverData["livelocation"];
+                    var lat = location["latitude"];
+                    var long = location["longitude"];
+                    var x = new H.map.Marker({
+                        lat: lat,
+                        lng: long
+                    });
+                    if (id in $scope.datamap) {
+                        $scope.datamap[id].marker.setPosition({
+                            lat: lat,
+                            lng: long
+                        });
+                    } else {
+                        $scope.datamap[id] = {};
+                        $scope.datamap[id].name = driverData["Name"];
+                        $scope.datamap[id].marker = x;
+                        markers.push(x);
+                        group.addObjects(markers);
+                        if (group in map.getObjects())
+                            map.removeObject(group);
+                        map.addObject(group);
+                        map.setViewBounds(group.getBounds());
+                    }
+                }
+                $scope.$applyAsync();
+            });
+
+            $scope.driverValue = "Select Driver";
+
+            $scope.getSelectedDriver = function(driver) {
+                console.log(driver);
+                console.log("datamap:" + driver);
+            };
+        });
+
+        app.controller('FeedbacksController', function($scope) {
+            var feedbackRef = firebase.database().ref("/feedbacks/");
+            $scope.redirectToAnalytics = function() {
+                var urlData = "";
+                for (var n in $scope.feedbackData) {
+                    urlData += $scope.feedbackData[n].comment + ".";
+                }
+                fetch("/tone?text=" + urlData, {
+                    method: 'GET',
+                    headers: {
+                        "Accept-Cross-Origin-Headers": "*"
+                    }
+                }).then(function(data) {
+                    return data.json();
+                }).then(function(resp) {
+                    console.log(JSON.stringify(resp));
+                    resp.pos = (resp.pos * 100).toPrecision(2) + "%";
+                    resp.neg = (resp.neg * 100).toPrecision(2) + "%";
+                    resp.neu = (resp.neu * 100).toPrecision(2) + "%";
+                    $scope.sentimentValues = resp;
+                    $scope.$apply();
+                }).catch(function(err) {
+                    console.log(err);
+                });
+            };
+            $scope.feedbackData = [];
+            feedbackRef.once('value', function(data) {
+                var obj = data.val();
+                for (let x in obj) {
+                    $scope.feedbackData.push(obj[x]);
+                }
+
+                $scope.$applyAsync();
+            });
+        });
+
+        // app.controller('FeedbackAnalyticsController', function($scope) {
+
+
+        // });
+    </script>
+
+    <script>
+        //Code for side drawer
+        $('document').ready(function() {
+            var preLi = $('.nav-item')[0];
+            var preA = $(preLi).children('a');
+            $(preA).removeClass('text-secondary');
+            $(preA).addClass('text-white');
+            $('.nav-link').click(function(e) {
+
+                $(preLi).removeClass('bg-primary');
+                $(preA).removeClass('text-white');
+                $(preA).addClass('text-secondary');
+
+                preLi = $(e.target).parent("li");
+                preA = e.target;
+
+                $(preLi).addClass('bg-primary');
+                $(e.target).removeClass('text-secondary');
+                $(e.target).addClass('text-white');
+
+            });
+
+            $('.nav-item').click(function(e) {
+
+                $(preLi).removeClass('bg-primary');
+                $(preA).removeClass('text-white');
+                $(preA).addClass('text-secondary');
+
+                preA = $(e.target).children("a");
+                preLi = e.target;
+
+                $(preLi).addClass('bg-primary');
+                $(preA).removeClass('text-secondary');
+                $(preA).addClass('text-white');
+
+            });
+
+        });
+    </script>
+
+
+
+</head>
+
+<body style='background-color:#2196f3;' ng-app="App" ng-controller="test" ng-Init="datamap={};checkedValues=[];sentimentValues={neg:0,compound:0,neu:0,pos:0};driver={name:'Loading....',mobile:'Please Wait'};profile={name:'xxxx',email:'xxx@gmail.com',mobile:'xxxxxxxxxx',area:'xxxxxxxxxxxxxxx'};itemsData=[];feedbackData=[];driverData=[];liveDeliveryData=[];numberofdeliveriestoday=0;numberofdeliveriesdonetoday=0;numberofdeliveriesdone=0;numberofdrivers=0;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="card m-1">
+                    <div class="card-body">
+                        <h5 class="card-title">Admin User</h5>
+                        <hr>
+                        <ul class="nav flex-column">
+                            <li class="nav-item bg-primary">
+                                <a class="nav-link text-secondary" href="#Dashboard">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-secondary" href="#CreateItems">Items</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-secondary" href="#ViewDrivers">View Drivers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-secondary" href="#Map">Monitor Drivers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-secondary" href="#Feedback">Feedbacks</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card m-1">
+                    <div class="card-body">
+                        <h5 class="card-title">Profile</h5>
+                        <hr>
+                        <p>Name: {{ profile.name }}</p>
+                        <p>Mobile: {{ profile.mobile }}</p>
+                        <p>Email: {{ profile.email }}</p>
+                        <p>Area: {{ profile.area }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9" ng-view>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
