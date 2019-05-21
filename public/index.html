@@ -82,11 +82,45 @@
                     lng: 77.626046
                 }
             });
+            //var ui = H.ui.UI.createDefault(map, defaultLayers);
+            //var mapSettings = ui.getControl('mapsettings');
+            //mapSettings.setEnabled(true);
 
             var currentPosition = new H.map.Marker({
                 lat: 37.21,
                 lng: -121.21
             });
+
+            // map.addEventListener('tap', function(evt) {
+            //     var coord = map.screenToGeo(evt.currentPointer.viewportX,
+            //         evt.currentPointer.viewportY);
+            //     let latVal = Math.abs(coord.lat.toFixed(4));
+            //     let lngVal = Math.abs(coord.lng.toFixed(4));
+            //     let posMarker = new H.map.Marker({
+            //         lat: latVal,
+            //         lng: lngVal
+            //     });
+            //     map.addObject(posMarker);
+            //     alert(latVal + ',' + lngVal);
+            // });
+
+            // let arr = [
+            //     [13.0481, 77.6284],
+            //     [13.1049, 77.6723],
+            //     [13.0897, 77.6884],
+            //     [13.1216, 77.6754],
+            //     [13.0922, 77.6654],
+            //     [13.0775, 77.5758],
+            //     [13.0684, 77.5506]
+            // ];
+
+
+
+            // for (let k in arr) {
+            //     let lat = k[0];
+            //     let lng = k[1];
+
+            // }
 
             //map.addObject(currentPosition);
 
@@ -251,6 +285,62 @@
             var ui = H.ui.UI.createDefault(map, defaultLayers, 'zh-CN');
             ui.removeControl('mapsettings');
         }
+
+
+        function getClusterMap() {
+            function addMarkersToMap(map) {
+                var parisMarker = new H.map.Marker({
+                    lat: 48.8567,
+                    lng: 2.3508
+                });
+                map.addObject(parisMarker);
+
+                var romeMarker = new H.map.Marker({
+                    lat: 41.9,
+                    lng: 12.5
+                });
+                map.addObject(romeMarker);
+
+                var berlinMarker = new H.map.Marker({
+                    lat: 52.5166,
+                    lng: 13.3833
+                });
+                map.addObject(berlinMarker);
+
+                var madridMarker = new H.map.Marker({
+                    lat: 40.4,
+                    lng: -3.6833
+                });
+                map.addObject(madridMarker);
+
+                var londonMarker = new H.map.Marker({
+                    lat: 51.5008,
+                    lng: -0.1224
+                });
+                map.addObject(londonMarker);
+            }
+            const app_id = "EC9XVOgMvc6wB4ycQRFH";
+            const app_code = "vJKm39sNoH382UhujmuJ_g";
+            var platform = new H.service.Platform({
+                app_id: app_id,
+                app_code: app_code,
+                useCIT: true,
+                useHTTPS: true
+            });
+            var defaultLayers = platform.createDefaultLayers();
+
+            var map = new H.Map(document.getElementById('maps'),
+                defaultLayers.normal.map, {
+                    center: {
+                        lat: 50,
+                        lng: 5
+                    },
+                    zoom: 4
+                });
+            var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+            var ui = H.ui.UI.createDefault(map, defaultLayers);
+            addMarkersToMap(map);
+        }
     </script>
 
     <script>
@@ -358,7 +448,7 @@
                     controller: 'DashboardController'
                 })
                 .when('/CreateItems', {
-                    templateUrl: 'CreateItems.html',
+                    templateUrl: 'OrderDistribution.html',
                     controller: 'CreateItemsController'
                 })
                 .when('/ViewDrivers', {
@@ -385,14 +475,34 @@
         app.controller('CreateItemsController', function($scope) {
             var itemsRef = firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019/");
 
+
             $scope.checkedValues = [];
+            $scope.driverVisible = true;
+            $scope.clusterList = [];
+            $scope.getClusterMap = getClusterMap();
+            $scope.geoData = [];
+            $scope.noitems = true;
+            $scope.fetchClusters = false;
+            $scope.itemsData = {};
+            $scope.clusteredData = [];
+
+
+            $scope.visibleChange = function() {
+                if ($scope.driverVisible) {
+                    return "visible";
+                } else {
+                    return "invisible";
+                }
+            };
+
+
+
+
 
             $scope.selectDriver = function() {
                 var driver = $scope.driver;
-                for (let x in $scope.checkedValues) {
-                    let selectedItem = $scope.checkedValues[x];
-
-
+                for (let x in $scope.tempClusterData) {
+                    let selectedItem = $scope.tempClusterData[x];
                     firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("published").set(true);
                     firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverName").set(driver.Name);
                     firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverMobile").set(driver.Mobile);
@@ -403,20 +513,23 @@
                 }
             };
 
-            $scope.check = function(i, data) {
-                console.log(data);
-                var checkBox = document.getElementById("checkbox" + i);
-                if (checkBox.checked) {
-                    $scope.checkedValues.push(data);
-                } else {
-                    $scope.checkedValues = $scope.checkedValues.filter(function(value, index, arr) {
-                        return value.orderId !== data.orderId;
-                    });
-                }
-                console.log($scope.checkedValues);
-            };
+            // $scope.check = function(i, data) {
+            //     console.log(data);
+            //     var checkBox = document.getElementById("checkbox" + i);
+            //     if (checkBox.checked) {
+            //         $scope.checkedValues.push(data);
+            //     } else {
+            //         $scope.checkedValues = $scope.checkedValues.filter(function(value, index, arr) {
+            //             return value.orderId !== data.orderId;
+            //         });
+            //     }
+            //     console.log($scope.checkedValues);
+            // };
 
-            $scope.searchDrivers = function(data) {
+            $scope.searchDrivers = function(values) {
+
+                $scope.tempClusterData = values;
+
                 getLocation().then(function(response) {
                     var coords = response.coords;
                     var start = coords.latitude + "," + coords.longitude;
@@ -428,7 +541,7 @@
                             let driversArr = [];
                             var driversList = data.val();
                             for (var driver in driversList) {
-                                if (!driversList[driver].inRide) {
+                                if (!driversList[driver].inRide && driversList[driver].isLive) {
                                     var location = driversList[driver].livelocation;
                                     var way2 = coords.latitude + "," + coords.longitude;
                                     coordsValue = coordsValue + "&destination" + i + "=" + way2;
@@ -447,6 +560,7 @@
                                     }
                                 }
                                 $scope.driver = driversArr[iVal];
+                                $scope.driverVisible = false;
                                 $scope.$apply();
                             }).catch(function(err) {
                                 console.log(err);
@@ -459,13 +573,87 @@
                 });
             };
 
-            $scope.itemsData = [];
+            $scope.getNoItemsVisibility = function() {
+                if ($scope.noitems) {
+                    return "visible";
+                } else {
+                    return "invisible";
+                }
+            }
 
-            itemsRef.on('child_added', function(data) {
+            $scope.getFetchClusters = function() {
+                if ($scope.fetchClusters) {
+                    return "visible";
+                } else {
+                    return "invisible";
+                }
+            }
+
+            $scope.getOrders = function() {
+
+                if ($scope.geoData.length == 0) {
+                    alert("No orders processed");
+                    return;
+                }
+
+                let geoData = [];
+                for (let ii in $scope.geoData) {
+                    let latlngstr = $scope.geoData[ii].split(',');
+                    let ddt = [];
+                    ddt.push(parseFloat(latlngstr[0].trim()));
+                    ddt.push(parseFloat(latlngstr[1].trim()));
+                    geoData.push(ddt);
+                }
+                fetch('http://localhost:5000/clusterData', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(geoData)
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(res) {
+                    let data = JSON.parse(res.data);
+                    for (let index in data) {
+                        let coords = data[index];
+                        let dataCluster = [];
+                        for (let j in coords) {
+                            let locString = coords[j][0] + "," + coords[j][1];
+                            dataCluster.push($scope.itemsData[locString]);
+                        }
+                        $scope.clusteredData.push(dataCluster);
+                    }
+                    console.log($scope.clusteredData);
+                    $scope.$apply();
+                }).catch(function(err) {
+                    console.log(err);
+                });
+            };
+
+
+
+            itemsRef.on('value', function(data) {
                 var obj = data.val();
-                $scope.itemsData.push(obj);
+                for (let j in obj) {
+                    $scope.itemsData[obj[j].location] = obj[j];
+                }
+                $scope.geoData = Object.keys($scope.itemsData);
+                console.log($scope.geoData);
+                $scope.noitems = false;
+                $scope.fetchClusters = true;
                 $scope.$applyAsync();
             });
+
+            itemsRef.on('child_removed', function(data) {
+                // for (var i = 0; i < arr.length; i++) {
+                //     if (arr[i] === 5) {
+                //         arr.splice(i, 1);
+                //     }
+                // }
+                console.log("Removed:" + JSON.stringify(data));
+            });
+
         });
 
         app.controller('DashboardController', function($scope) {

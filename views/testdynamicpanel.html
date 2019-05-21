@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-core.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+    <script>
+        $('document').ready(function() {
+            let data = [
+                [13.2312, 77.3091],
+                [13.0544, 77.6115],
+                [13.0551, 77.6004],
+                [13.0526, 77.5951],
+                [13.0646, 77.5933],
+                [13.0641, 77.5781],
+                [13.0106, 77.7187],
+                [13.0071, 77.7441],
+                [12.9889, 77.7549],
+                [12.9966, 77.7190]
+            ];
+            fetch('http://localhost:5000/clusterData', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(function(response) {
+                return response.json();
+            }).then(function(data) {
+                console.log(JSON.stringify(data));
+            }).catch(function(err) {
+                console.log(err);
+            })
+        });
+
+        function addMarkersToMap(map) {
+            var parisMarker = new H.map.Marker({
+                lat: 48.8567,
+                lng: 2.3508
+            });
+            map.addObject(parisMarker);
+
+            var romeMarker = new H.map.Marker({
+                lat: 41.9,
+                lng: 12.5
+            });
+            map.addObject(romeMarker);
+
+            var berlinMarker = new H.map.Marker({
+                lat: 52.5166,
+                lng: 13.3833
+            });
+            map.addObject(berlinMarker);
+
+            var madridMarker = new H.map.Marker({
+                lat: 40.4,
+                lng: -3.6833
+            });
+            map.addObject(madridMarker);
+
+            var londonMarker = new H.map.Marker({
+                lat: 51.5008,
+                lng: -0.1224
+            });
+            map.addObject(londonMarker);
+        }
+        const app_id = "EC9XVOgMvc6wB4ycQRFH";
+        const app_code = "vJKm39sNoH382UhujmuJ_g";
+        var platform = new H.service.Platform({
+            app_id: app_id,
+            app_code: app_code,
+            useCIT: true,
+            useHTTPS: true
+        });
+        var defaultLayers = platform.createDefaultLayers();
+
+        var map = new H.Map(document.getElementById('map'),
+            defaultLayers.normal.map, {
+                center: {
+                    lat: 50,
+                    lng: 5
+                },
+                zoom: 4
+            });
+        var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+        var ui = H.ui.UI.createDefault(map, defaultLayers);
+        addMarkersToMap(map);
+    </script>
+
+</head>
+
+<body>
+
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myController", function($scope) {
+            $scope.visibleChange = function() {
+                if ($scope.driverVisible) {
+                    return "visible";
+                } else {
+                    return "invisible";
+                }
+            };
+        });
+    </script>
+
+    <div ng-app="myApp" ng-controller="myController" ng-init="driverName='';driverVisible=false;distance='';clusterList=[{itemsdata:[{'orderId':'1','username':'ni','itemName':'dd','address':'dddd','mobile':'ddddsafasdf','quantity':'dfsdf'}]}]">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="card mt-3 bg-light text-primary" ng-repeat="values in clusterList">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3>Group {{ $index }}</h3>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#mapModal">Show in Map</button>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#myModal">Select Driver</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead class="thead">
+                                        <th class="col-1 text-center">#</th>
+                                        <th class="col-1 text-center">Order Id</th>
+                                        <th class="col-2 text-center">Username</th>
+                                        <th class="col-2">ItemName</th>
+                                        <th class="col-3">Address</th>
+                                        <th class="col-2 text-center">Mobile</th>
+                                        <th class="col-1 text-center">Quantity</th>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="data in values['itemsdata']">
+                                            <td class="col-1 text-center">{{ $index+1 }}</td>
+                                            <td class="col-1 text-center">{{ data.orderId }}</td>
+                                            <td class="col-2 text-center">{{ data.username }}</td>
+                                            <td class="col-2">{{ data.itemName }}</td>
+                                            <td class="col-3">{{ data.address }}</td>
+                                            <td class="col-2 text-center">{{ data.mobile }}</td>
+                                            <td class="col-1 text-center">{{ data.quantity }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="modal fade" id="myModal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Available Driver List</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <div class="d-flex justify-content-center" ng-class="visibleChange()">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                {{driverName}}
+                                <span class=" badge badge-primary badge-pill ">{{distance}}</span>
+                            </div>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer ">
+                            <button type="button " class="btn btn-primary " data-dismiss="modal ">Assign</button>
+                            <button type="button " class="btn btn-danger " data-dismiss="modal ">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="mapModal">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Map Locations</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <div id="map" style="height: 400px; background: grey"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+</body>
+
+</html>
