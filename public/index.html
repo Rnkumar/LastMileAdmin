@@ -49,7 +49,7 @@
     <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-service.js" charset="utf-8"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
     <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
-
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-clustering.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -341,6 +341,49 @@
             var ui = H.ui.UI.createDefault(map, defaultLayers);
             addMarkersToMap(map);
         }
+
+
+        function loadClusteringMap(data) {
+            console.log(typeof(data));
+
+            function startClustering(map, data) {
+                var dataPoints = data.map(function(item) {
+                    return new H.clustering.DataPoint(item.latitude, item.longitude);
+                });
+                var clusteredDataProvider = new H.clustering.Provider(dataPoints, {
+                    clusteringOptions: {
+                        eps: 32,
+                        minWeight: 2
+                    }
+                });
+
+                var clusteringLayer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+
+                map.addLayer(clusteringLayer);
+            }
+            const app_id = "EC9XVOgMvc6wB4ycQRFH";
+            const app_code = "vJKm39sNoH382UhujmuJ_g";
+
+            var platform = new H.service.Platform({
+                app_id: app_id,
+                app_code: app_code,
+                useHTTPS: true,
+                useCIT: true
+            });
+            var defaultLayers = platform.createDefaultLayers();
+
+            var map = new H.Map(document.getElementById('markermap'), defaultLayers.normal.map, {
+                center: new H.geo.Point(30.789, 33.790),
+                zoom: 2
+            });
+
+            var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+
+            var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+            startClustering(map, data);
+        }
     </script>
 
     <script>
@@ -467,6 +510,10 @@
                     templateUrl: 'FeedbackAnalytics.html',
                     controller: 'FeedbackAnalyticsController'
                 })
+                .when('/MapOrderView', {
+                    templateUrl: 'MarkerClustering.html',
+                    controller: 'MarkerClusteringController'
+                })
                 .otherwise({
                     redirectTo: '/Dashboard'
                 })
@@ -495,7 +542,9 @@
                 }
             };
 
-
+            $scope.populateMap = function() {
+                window.location.href = "#MapOrderView";
+            };
 
 
 
@@ -788,6 +837,13 @@
 
 
         // });
+
+        app.controller('MarkerClusteringController', function($scope, $http) {
+            $http.get('sample.json').then(function(data) {
+                console.log(Object.keys(data));
+                loadClusteringMap(data.data);
+            });
+        });
     </script>
 
     <script>
