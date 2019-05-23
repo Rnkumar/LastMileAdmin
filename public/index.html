@@ -330,7 +330,7 @@
             var defaultLayers = platform.createDefaultLayers();
 
             var map = new H.Map(document.getElementById('maps'), defaultLayers.normal.map, {
-                zoom: 13,
+                zoom: 4,
                 center: {
                     lat: 13.043563,
                     lng: 77.626046
@@ -343,8 +343,6 @@
 
 
         function loadClusteringMap(data) {
-            console.log(typeof(data));
-
             function startClustering(map, data) {
                 var dataPoints = data.map(function(item) {
                     return new H.clustering.DataPoint(item.latitude, item.longitude);
@@ -839,9 +837,25 @@
         // });
 
         app.controller('MarkerClusteringController', function($scope, $http) {
-            $http.get('sample.json').then(function(data) {
-                console.log(Object.keys(data));
-                loadClusteringMap(data.data);
+            // $http.get('sample.json').then(function(data) {
+            //     console.log(Object.keys(data));
+            //     loadClusteringMap(data.data);
+            // });
+            $scope.clusterData = [];
+
+            var itemsRef = firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019/");
+            itemsRef.on('value', function(data) {
+                var obj = data.val();
+                for (let j in obj) {
+                    let latLng = obj[j].location.split(",");
+                    let geo = {};
+                    geo["latitude"] = latLng[0];
+                    geo["longitude"] = latLng[1];
+                    $scope.clusterData.push(geo);
+                }
+                loadClusteringMap($scope.clusterData);
+                console.log($scope.clusterData);
+                $scope.$applyAsync();
             });
         });
     </script>
