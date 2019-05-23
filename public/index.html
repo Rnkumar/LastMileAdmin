@@ -329,17 +329,16 @@
             });
             var defaultLayers = platform.createDefaultLayers();
 
-            var map = new H.Map(document.getElementById('maps'),
-                defaultLayers.normal.map, {
-                    center: {
-                        lat: 50,
-                        lng: 5
-                    },
-                    zoom: 4
-                });
+            var map = new H.Map(document.getElementById('maps'), defaultLayers.normal.map, {
+                zoom: 13,
+                center: {
+                    lat: 13.043563,
+                    lng: 77.626046
+                }
+            });
             var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-            var ui = H.ui.UI.createDefault(map, defaultLayers);
-            addMarkersToMap(map);
+            //var ui = H.ui.UI.createDefault(map, defaultLayers);
+            //addMarkersToMap(map);
         }
 
 
@@ -555,6 +554,7 @@
                     firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("published").set(true);
                     firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverName").set(driver.Name);
                     firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverMobile").set(driver.Mobile);
+                    firebase.database().ref("/users/").child(selectedItem.userId).child("orders").child(selectedItem.orderId).child("driverId").set(driver.driverId);
 
                     firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019").child(selectedItem.orderId).child("published").set(true);
                     firebase.database().ref("/deliveries/ToBeDelivered/15-05-2019").child(selectedItem.orderId).child("driverId").set(driver.driverId);

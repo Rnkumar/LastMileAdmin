@@ -23,7 +23,7 @@
         </div>
         <div class="row">
             <div class="col-sm">
-                <div class="card mt-3 bg-light text-primary" ng-repeat="values in clusteredData">
+                <div class="card mt-3 bg-light text-primary" ng-repeat="values in clusteredData track by $index">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-sm-6">
@@ -50,7 +50,7 @@
                                     <th class="col-1 text-center">Quantity</th>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="data in values">
+                                    <tr ng-repeat="data in values track by $index">
                                         <td class="col-1 text-center">{{ $index+1 }}</td>
                                         <td class="col-1 text-center">{{ data.orderId }}</td>
                                         <td class="col-2 text-center">{{ data.userId }}</td>
