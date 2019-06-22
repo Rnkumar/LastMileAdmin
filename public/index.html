@@ -137,6 +137,7 @@
                 }).then(function(response) {
                     return response.json();
                 }).then(function(responseJSON) {
+                    console.log(JSON.stringify(responseJSON))
                     var travelTime = responseJSON["response"].matrixEntry;
                     resolve(travelTime);
                 }).catch(function(err) {
@@ -460,6 +461,15 @@
 
 
                         break;
+                    case "Returns":
+                        var mapLi = $('.nav-item')[5];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+
+                        break;
                     default:
                         break;
                 }
@@ -510,6 +520,10 @@
                 .when('/MapOrderView', {
                     templateUrl: 'MarkerClustering.html',
                     controller: 'MarkerClusteringController'
+                })
+                .when('/Returns', {
+                    templateUrl: 'ReturnItems.html',
+                    controller: 'ReturnsController'
                 })
                 .otherwise({
                     redirectTo: '/Dashboard'
@@ -580,6 +594,7 @@
                 getLocation().then(function(response) {
                     var coords = response.coords;
                     var start = coords.latitude + "," + coords.longitude;
+                    
                     var ref = firebase.database().ref("/drivers/");
                     ref.once('value')
                         .then(function(data) {
@@ -596,6 +611,7 @@
                                     driversArr.push(driversList[driver]);
                                 }
                             }
+                            console.log(start+coordsValue)
                             findMatrixDistance(start, coordsValue).then(function(response) {
                                 let min = 999999999;
                                 let iVal = 0;
@@ -831,10 +847,64 @@
             });
         });
 
-        // app.controller('FeedbackAnalyticsController', function($scope) {
+        app.controller('ReturnsController', function($scope) {
 
+            var returnsRef = firebase.database().ref("/orders/returns/");
 
-        // });
+            $scope.itemsData = [];
+
+            $scope.searchDrivers = function(value){
+                    var start = value.location;
+                    var latlngs = value.location.split(",");
+                    var coords = {};
+                    coords["latitude"] = latlngs[0];
+                    coords["longitude"] = latlngs[1];
+                    var ref = firebase.database().ref("/drivers/");
+                    ref.once('value')
+                        .then(function(data) {
+                            var i = 0;
+                            let coordsValue = "";
+                            let driversArr = [];
+                            var driversList = data.val();
+                            for (var driver in driversList) {
+                                if (!driversList[driver].inRide && driversList[driver].isLive) {
+                                    var location = driversList[driver].livelocation;
+                                    var way2 = coords.latitude + "," + coords.longitude;
+                                    coordsValue = coordsValue + "&destination" + i + "=" + way2;
+                                    i = i + 1;
+                                    driversArr.push(driversList[driver]);
+                                }
+                            }
+                            findMatrixDistance(start, coordsValue).then(function(response) {
+                                let min = 999999999;
+                                let iVal = 0;
+                                for (var index = 0; index < response.length; index++) {
+                                    var x = response[index].summary;
+                                    if (x.travelTime < min) {
+                                        min = x.travelTime;
+                                        iVal = index;
+                                    }
+                                }
+                                console.log(JSON.stringify(driversArr[iVal]))
+                                $scope.chosenDriver = driversArr[iVal];
+                                $scope.$applyAsync();
+                            }).catch(function(err) {
+                                console.log(err);
+                            });
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
+            };
+
+            returnsRef.once('value', function(data) {
+                var obj = data.val();
+                for (let val in obj) {
+                    $scope.itemsData.push(obj[val]);
+                }
+                console.log(JSON.stringify(obj));
+                $scope.$applyAsync();
+            });
+        });
 
         app.controller('MarkerClusteringController', function($scope, $http) {
             // $http.get('sample.json').then(function(data) {
@@ -927,6 +997,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-secondary" href="#Feedback">Feedbacks</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-secondary" href="#Returns">Returns</a>
                             </li>
                         </ul>
                     </div>

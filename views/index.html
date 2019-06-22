@@ -364,6 +364,17 @@
 
 
                         break;
+
+                    case "Returns":
+                        var mapLi = $('.nav-item')[5];
+                        var mapA = $(mapLi).children('a');
+                        $(mapA).removeClass('text-secondary');
+                        $(mapA).addClass('text-white');
+                        $(mapLi).addClass('bg-primary');
+
+
+                        break;
+
                     default:
                         break;
                 }
@@ -410,6 +421,10 @@
                 .when('/FeedbackAnalytics', {
                     templateUrl: 'FeedbackAnalytics.html',
                     controller: 'FeedbackAnalyticsController'
+                })
+                .when('/Returns', {
+                    templateUrl: 'ReturnItems.html',
+                    controller: 'ReturnsController'
                 })
                 .otherwise({
                     redirectTo: '/Dashboard'
@@ -630,10 +645,9 @@
             });
         });
 
-        // app.controller('FeedbackAnalyticsController', function($scope) {
-
-
-        // });
+        app.controller('ReturnsController', function($scope) {
+            $scope.itemsData = [];
+        });
     </script>
 
     <script>
@@ -699,11 +713,14 @@
                                 <a class="nav-link text-secondary" href="#ViewDrivers">View Drivers</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-secondary" href="#Map">Monitor Drivers</a>
+                                <a class="nav-link text-secondary" href="#Map">Monitor DriversHEWY</a>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a class="nav-link text-secondary" href="#Feedback">Feedbacks</a>
-                            </li>
+                            </li> -->
+                            <!-- <li class="nav-item">
+                                <a class="nav-link text-secondary" href="#Returns">Returns</a>
+                            </li> -->
                         </ul>
                     </div>
                 </div>

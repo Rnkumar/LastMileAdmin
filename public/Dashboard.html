@@ -16,15 +16,15 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-3">
                 <div class="card m-1 shadow">
                     <div class="card-body">
-                        <h4 class="card-title"><small class="text-muted">Number of Drivers</small></h4>
+                        <h4 class="card-title"><small class="text-muted">No of Drivers</small></h4>
                         <p>{{ numberofdrivers }}</p>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-3">
                 <div class="card m-1 shadow">
                     <div class="card-body">
                         <h4 class="card-title"><small class="text-muted">Total Deliveries</small></h4>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-3">
                 <div class="card m-1 shadow">
                     <div class="card-body">
                         <h4 class="card-title"><small class="text-muted">Today's Deliveries</small></h4>
@@ -40,7 +40,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3">
+            <div class="col-3">
                 <div class="card m-1 shadow">
                     <div class="card-body">
                         <h4 class="card-title"><small class="text-muted">Today's Delivered</small></h4>
@@ -50,37 +50,39 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-12">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-6">
                             <h5 class="mt-3 mb-3 ml-2"><small class="text-white">Live Delivery List</small></h5>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-12">
+                        <div class="col-12">
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead class="thead">
                                         <tr>
                                             <th class="col-1 text-center">#</th>
                                             <th class="col-2">ItemName</th>
-                                            <th class="col-3">Address</th>
+                                            <th class="col-5">Address</th>
                                             <th class="col-2">User Mobile</th>
                                             <th class="col-1 text-center">Quantity</th>
-                                            <th class="col-2 text-center">orderId</th>
+                                            <th class="col-1 text-center">orderId</th>
                                             <!-- <th class="col-1 text-center">Track</th> -->
                                         </tr>
+                                        </thead>
+                                        <tbody>
                                         <tr ng-repeat="data in liveDeliveryData">
                                             <td class="col-1 text-center text-white">{{ $index+1 }}</td>
                                             <td class="col-2 text-white">{{ data.itemName }}</td>
-                                            <td class="col-4 text-white">{{ data.address }}</td>
+                                            <td class="col-5 text-white">{{ data.address }}</td>
                                             <td class="col-2 text-white">{{ data.mobile }}</td>
                                             <td class="col-1 text-white text-center">{{ data.quantity }}</td>
                                             <td class="col-1 text-white text-center">{{ data.orderId }}</td>
                                             <!-- <td class="col-1"><button type="button" class="btn btn-primary">Track</button></td> -->
                                         </tr>
-                                    </thead>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
